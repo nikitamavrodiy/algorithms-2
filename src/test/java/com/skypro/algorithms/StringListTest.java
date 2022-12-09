@@ -70,6 +70,7 @@ public class StringListTest {
     public void removeItem() {
         int defaultSize = array.size();
         assertEquals("default2", array.remove("default2"), "Сопоставление входных и выходных данных");
+        assertNotEquals("default2", array.get(1), "элемент удален");
         assertThrows(StringListArgumentNullException.class, () -> array.remove(null), "ошибка, аргумент null");
         assertThrows(StringListIncorrectItemException.class, () -> array.remove("default2"), "ошибка, отсутствие объекта");
         assertEquals(defaultSize - 1, array.size(), "Проверка длины массива");
@@ -79,9 +80,11 @@ public class StringListTest {
     public void removeIndex() {
         int defaultSize = array.size();
         assertEquals("default2", array.remove(1), "Сопоставление входных и выходных данных");
+        assertNotEquals("default2", array.get(1), "элемент удален");
         assertThrows(StringListIncorrectIndexException.class, () -> array.remove(array.size()), "ошибка, если превышение индекса");
         assertThrows(StringListIncorrectIndexException.class, () -> array.remove(-1), "ошибка, если индекс меньше нуля");
         assertEquals(defaultSize - 1, array.size(), "Проверка длины массива");
+
     }
 
     @Test
