@@ -15,20 +15,15 @@ public class StringListImpl implements StringList {
 
     @Override
     public String add(String item) {
-        if (item == null) {
-            throw new StringListArgumentNullException();
-        }
-        array = Arrays.copyOf(array, array.length + 1);
+        checkItem(item);
+        grow();
         return array[array.length - 1] = item;
     }
 
     @Override
     public String add(int index, String item) {
-        if (item == null) {
-            throw new StringListArgumentNullException();
-        } else if (index > array.length - 1) {
-            throw new StringListIncorrectIndexException();
-        }
+        checkItem(item);
+        checkIndex(index);
         String[] newArray = new String[array.length + 1];
         for (int i = 0; i < array.length; i++) {
             if (i < index) {
@@ -43,31 +38,19 @@ public class StringListImpl implements StringList {
 
     @Override
     public String set(int index, String item) {
-        if (item == null) {
-            throw new StringListArgumentNullException();
-        } else if (index > array.length - 1 || index < 0) {
-            throw new StringListIncorrectIndexException();
-        }
+        checkItem(item);
+        checkIndex(index);
         return array[index] = item;
     }
 
     @Override
     public String remove(String item) {
-        if (item == null) {
-            throw new StringListArgumentNullException();
-        }
+        checkItem(item);
         for (int i = 0; i < array.length; i++) {
-            if (item.equals(array[i])) {
-                String[] newArray = new String[array.length - 1];
-                String deleted = array[i];
-                for (int j = 0; j < array.length - 1; j++) {
-                    if (j < i) {
-                        newArray[j] = array[j];
-                    } else {
-                        newArray[j] = array[j + 1];
-                    }
-                }
-                array = newArray;
+            String deleted;
+            if (array[i].equals(item)) {
+                deleted = array[i];
+                array = copyWithoutIndex(i);
                 return deleted;
             }
         }
@@ -76,28 +59,15 @@ public class StringListImpl implements StringList {
 
     @Override
     public String remove(int index) {
-        if (index > array.length - 1 || index < 0) {
-            throw new StringListIncorrectIndexException();
-        }
-        String[] arrayNew = new String[array.length - 1];
+        checkIndex(index);
         String deleted = array[index];
-        int j = 0;
-        for (int i = 0; i < array.length - 1; i++) {
-            if (j == index) {
-                j++;
-            }
-            arrayNew[i] = array[j];
-            j++;
-        }
-        array = arrayNew;
+        array = copyWithoutIndex(index);
         return deleted;
     }
 
     @Override
     public boolean contains(String item) {
-        if (item == null) {
-            throw new StringListArgumentNullException();
-        }
+        checkItem(item);
         for (String s : array) {
             if (item.equals(s)) {
                 return true;
@@ -108,9 +78,7 @@ public class StringListImpl implements StringList {
 
     @Override
     public int indexOf(String item) {
-        if (item == null) {
-            throw new StringListArgumentNullException();
-        }
+        checkItem(item);
         for (int i = 0; i < array.length; i++) {
             if (array[i].equals(item)) {
                 return i;
@@ -121,9 +89,7 @@ public class StringListImpl implements StringList {
 
     @Override
     public int lastIndexOf(String item) {
-        if (item == null) {
-            throw new StringListArgumentNullException();
-        }
+        checkItem(item);
         for (int i = array.length - 1; i >= 0; i--) {
             if (array[i].equals(item)) {
                 return i;
@@ -134,9 +100,7 @@ public class StringListImpl implements StringList {
 
     @Override
     public String get(int index) {
-        if (index > array.length - 1 || index < 0) {
-            throw new StringListIncorrectIndexException();
-        }
+        checkIndex(index);
         return array[index];
     }
 
@@ -174,5 +138,34 @@ public class StringListImpl implements StringList {
     @Override
     public String[] toArray() {
         return Arrays.copyOf(array, array.length);
+    }
+
+    private void checkItem(String item) {
+        if (item == null) {
+            throw new StringListArgumentNullException();
+        }
+    }
+
+    private void checkIndex(int index) {
+        if (index > array.length - 1 || index < 0) {
+            throw new StringListIncorrectIndexException();
+        }
+    }
+
+    private void grow() {
+        array = Arrays.copyOf(array, array.length + 1);
+    }
+
+    private String[] copyWithoutIndex(int index) {
+        String[] arrayNew = new String[array.length - 1];
+        int j = 0;
+        for (int i = 0; i < array.length - 1; i++) {
+            if (j == index) {
+                j++;
+            }
+            arrayNew[i] = array[j];
+            j++;
+        }
+        return arrayNew;
     }
 }
