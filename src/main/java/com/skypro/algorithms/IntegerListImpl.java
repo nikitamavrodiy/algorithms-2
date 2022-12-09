@@ -1,31 +1,29 @@
 package com.skypro.algorithms;
 
-import com.skypro.algorithms.exceptions.StringListArgumentNullException;
-import com.skypro.algorithms.exceptions.StringListIncorrectIndexException;
-import com.skypro.algorithms.exceptions.StringListIncorrectItemException;
+import com.skypro.algorithms.exceptions.*;
 
 import java.util.Arrays;
 
-public class StringListImpl implements StringList {
-    private String[] array;
+public class IntegerListImpl implements IntegerList {
+    private Integer[] array;
 
-    public StringListImpl() {
-        this.array = new String[0];
+    public IntegerListImpl() {
+        this.array = new Integer[0];
     }
 
     @Override
-    public String add(String item) {
+    public Integer add(Integer item) {
         checkItem(item);
         grow();
         return array[array.length - 1] = item;
     }
 
     @Override
-    public String add(int index, String item) {
+    public Integer add(int index, Integer item) {
         checkItem(item);
         checkIndex(index);
-        String[] newArray = new String[array.length + 1];
-        for (int i = 0; i < array.length; i++) {
+        Integer[] newArray = new Integer[array.length + 1];
+        for (int i = 0; i < this.array.length; i++) {
             if (i < index) {
                 newArray[i] = array[i];
             } else {
@@ -37,17 +35,17 @@ public class StringListImpl implements StringList {
     }
 
     @Override
-    public String set(int index, String item) {
+    public Integer set(int index, Integer item) {
         checkItem(item);
         checkIndex(index);
         return array[index] = item;
     }
 
     @Override
-    public String remove(String item) {
+    public Integer remove(Integer item) {
         checkItem(item);
         for (int i = 0; i < array.length; i++) {
-            String deleted;
+            Integer deleted;
             if (array[i].equals(item)) {
                 deleted = array[i];
                 array = copyWithoutIndex(i);
@@ -58,17 +56,17 @@ public class StringListImpl implements StringList {
     }
 
     @Override
-    public String remove(int index) {
+    public Integer remove(int index) {
         checkIndex(index);
-        String deleted = array[index];
+        Integer deleted = array[index];
         array = copyWithoutIndex(index);
         return deleted;
     }
 
     @Override
-    public boolean contains(String item) {
+    public boolean contains(Integer item) {
         checkItem(item);
-        for (String s : array) {
+        for (Integer s : array) {
             if (item.equals(s)) {
                 return true;
             }
@@ -77,7 +75,7 @@ public class StringListImpl implements StringList {
     }
 
     @Override
-    public int indexOf(String item) {
+    public int indexOf(Integer item) {
         checkItem(item);
         for (int i = 0; i < array.length; i++) {
             if (array[i].equals(item)) {
@@ -87,8 +85,14 @@ public class StringListImpl implements StringList {
         return -1;
     }
 
+    public int indexOfBinary(Integer item) {
+        Integer[] array = toArray();
+        sort(array);
+        return binarySearch(array, item);
+    }
+
     @Override
-    public int lastIndexOf(String item) {
+    public int lastIndexOf(Integer item) {
         checkItem(item);
         for (int i = array.length - 1; i >= 0; i--) {
             if (array[i].equals(item)) {
@@ -99,15 +103,15 @@ public class StringListImpl implements StringList {
     }
 
     @Override
-    public String get(int index) {
+    public Integer get(int index) {
         checkIndex(index);
         return array[index];
     }
 
     @Override
-    public boolean equals(StringList otherList) {
+    public boolean equals(IntegerList otherList) {
         if (otherList == null) {
-            throw new StringListArgumentNullException();
+            throw new IntegerListArgumentNullException();
         }
         if (otherList.getClass() != this.getClass() || otherList.size() != this.size()) {
             return false;
@@ -132,32 +136,61 @@ public class StringListImpl implements StringList {
 
     @Override
     public void clear() {
-        this.array = new String[0];
+        this.array = new Integer[0];
     }
 
     @Override
-    public String[] toArray() {
+    public Integer[] toArray() {
         return Arrays.copyOf(array, array.length);
     }
 
-    private void checkItem(String item) {
+    private void checkItem(Integer item) {
         if (item == null) {
-            throw new StringListArgumentNullException();
+            throw new IntegerListArgumentNullException();
         }
     }
 
     private void checkIndex(int index) {
         if (index > array.length - 1 || index < 0) {
-            throw new StringListIncorrectIndexException();
+            throw new IntegerListIncorrectIndexException();
         }
+    }
+
+    private void sort(Integer[] array) {
+        for (int i = 1; i < array.length; i++) {
+            int tmp = array[i];
+            int j = i;
+            while (j > 0 && array[j - 1] >= tmp) {
+                array[j] = array [j - 1];
+                j--;
+            }
+            array[j] = tmp;
+        }
+    }
+
+    private int binarySearch(Integer[] array, int el) {
+        int min = 0;
+        int max = array.length - 1;
+        while (min <= max) {
+            int mid = (min + max) / 2;
+            if (el == array[mid]) {
+                return mid;
+            }
+            if (el < array[mid]) {
+                max = mid - 1;
+            } else {
+                min = mid + 1;
+            }
+        }
+        return -1;
     }
 
     private void grow() {
         array = Arrays.copyOf(array, array.length + 1);
     }
 
-    private String[] copyWithoutIndex(int index) {
-        String[] arrayNew = new String[array.length - 1];
+    private Integer[] copyWithoutIndex(int index) {
+        Integer[] arrayNew = new Integer[array.length - 1];
         int j = 0;
         for (int i = 0; i < array.length - 1; i++) {
             if (j == index) {
